@@ -1,15 +1,17 @@
 // console.log("Before attempt");
 check();
-
+var count = 0;
+var max = 6;
 function check(){
     const els = document.getElementsByClassName("game-state-container");
     setTimeout(()=>{
         if (els.length > 0) {
             console.log(els.length);
-            // console.log("(check) Defined.");
+            console.log("(check) Defined.");
             modifyTime(els);
-        } else {
-            // console.log("(check) Undefined.");
+        } else if (count < max) {
+            console.log("(check) Undefined.");
+            count += 1;
             setTimeout(check(),1000);
         }
     },1000);
@@ -57,6 +59,3 @@ function modifyTime(eles){
         }
     }
 }
-
-
-// console.log("Outside of if statement")

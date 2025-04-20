@@ -27,34 +27,6 @@ function modifyTime(eles){
             // console.log(`(modifyTime for) child tag name: ${cEl[0].tagName}`)
             // console.log(`(modifyTime for) child text: ${cEl[0].textContent}`)
             var str = cEl[0].textContent;
-            console.log(`(modifyTime for) str: ${str}`)
-            var arr = Array.from(str.matchAll(re), (m) => m[0]);
-            console.log(`(modifyTime for) ${arr[0]} and `)
-            // if (str.matchAll(re) !== null){
-            //     const arr = [...str.matchAll(re)]
-            //     console.log(`(modifyTime for) words: ${arr[1]} ${arr[2]} ${arr[3]}`)
-            //     var hours = words[1];
-            //     hours -= 4;
-            //     cEl[0].textContent = hours;
-            // }
-            // const words = c.matchAll(re);
-            // const timeSep = [...words];
-            // let hours = timeSep[0];
-            // console.log(hours)
-            // let mins = timeSep[1];
-            // console.log(mins)
-            // let ampm = timeSep[2];
-            // console.log(ampm)
-            // let zone = timeSep[3];
-            // console.log(zone)
-            // let pdtHours = hours - 4;
-            // let pdtMins = mins;
-            // let pdtAmpm = ampm;
-            // let pdtZone = "PDT";
-            // cEl[0].textContent = pdtHours + ":" + pdtMins + " " + pdtAmpm + " " + pdtZone;
         }
     }
 }
-
-
-// console.log("Outside of if statement")

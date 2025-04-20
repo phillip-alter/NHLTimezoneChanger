@@ -10,7 +10,7 @@
       "content_scripts": [
         {
           "js": ["scripts/content.js"],
-          "matches": ["https://*.nhl.com/*"]
+          "matches": ["https://www.nhl.com/*"]
         }
       ]
 }

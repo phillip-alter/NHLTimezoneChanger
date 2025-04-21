@@ -1,33 +1,29 @@
 var count = 0;
 var max = 6;
 var offset = new Date().getTimezoneOffset();
-console.log(offset);
-chrome.storage.local.get('observingDST', (data) => {
-    const userPrefersDST = data.observingDST;
-    const dst = userPrefersDST && isDST();
+const etOffsetMinutes = getTimeOffsetInMinutes("America/New_York");
+const utcOffsetMinutes = getTimeOffsetInMinutes("UTC");
+const etOffset = etOffsetMinutes - utcOffsetMinutes;
 
-    if (dst) {
-        console.log("(chrome local storage) DST offset is active");
-    } else {
-        console.log("(chrome local storage) DST offset is NOT active");
-    }
-    check(dst);
-});
+console.log(`(getTimeOffsetInMinutes) Difference between America/New_York and UTC (in minutes): ${etOffset}`);
+console.log(`(getTimeOffsetInMinutes) Difference between local clock and UTC in mins: ${offset}`);
 
-function isDST() {
-    const today = new Date();
-    const jan = new Date(today.getFullYear(), 0, 1); 
-    const jul = new Date(today.getFullYear(), 6, 1); 
-    return today.getTimezoneOffset() < Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
-}
+check();
 
-function check(dst) {
+function getTimeOffsetInMinutes(timeZone) {
+    const now = new Date();
+    const targetTimeString = now.toLocaleString("en-US", { timeZone: timeZone });
+    const targetDate = new Date(targetTimeString);
+    return Math.round((now.getTime() - targetDate.getTime()) / (1000 * 60));
+  }
+
+function check() {
     const els = document.getElementsByClassName("game-state-container");
     setTimeout(() => {
         if (els.length > 0) {
             console.log(els.length);
             console.log("(check) Defined.");
-            modifyTime(els,dst);
+            modifyTime(els);
         } else if (count < max) {
             console.log("(check) Undefined.");
             count += 1;
@@ -36,7 +32,7 @@ function check(dst) {
     }, 1000);
 }
 
-function modifyTime(eles,dst) {
+function modifyTime(eles) {
     if (eles.length > 0) {
         const hrs = /[0-9]{1,2}:/gi;
         const mins = /(00)|(30)/gi;
@@ -52,11 +48,7 @@ function modifyTime(eles,dst) {
             var ap;
             if (hr !== null && min !== null && ampmCheck !== null && tz !== null) {
                 var utcTime = (parseInt(hr[0]) + 12) * 60;
-                if (dst) {
-                    utcTime += 240;
-                } else {
-                    utcTime += 300;
-                }
+                utcTime += etOffset;
                 var localTime = (utcTime) - (offset);
                 var leftoverMins = localTime % 60;
                 localTime = parseInt(localTime / 60) % 24;

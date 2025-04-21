@@ -4,7 +4,7 @@ var offset = new Date().getTimezoneOffset();
 console.log(offset);
 chrome.storage.local.get('observingDST', (data) => {
     const userPrefersDST = data.observingDST;
-    const dst = userPrefersDST;
+    const dst = userPrefersDST && isDST();
 
     if (dst) {
         console.log("(chrome local storage) DST offset is active");
@@ -13,6 +13,13 @@ chrome.storage.local.get('observingDST', (data) => {
     }
     check(dst);
 });
+
+function isDST() {
+    const today = new Date();
+    const jan = new Date(today.getFullYear(), 0, 1); 
+    const jul = new Date(today.getFullYear(), 6, 1); 
+    return today.getTimezoneOffset() < Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+}
 
 function check(dst) {
     const els = document.getElementsByClassName("game-state-container");

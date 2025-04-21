@@ -1,34 +1,26 @@
 var count = 0;
 var max = 6;
 var offset = new Date().getTimezoneOffset();
-let finalDST;
 console.log(offset);
 chrome.storage.local.get('observingDST', (data) => {
     const userPrefersDST = data.observingDST;
-    const systemDST = isDST(new Date());
-     finalDST = systemDST && userPrefersDST;
+    const dst = userPrefersDST;
 
-    if (finalDST) {
-        console.log("DST is active based on system and user preference.");
+    if (dst) {
+        console.log("(chrome local storage) DST offset is active");
     } else {
-        console.log("DST is NOT active based on system or user preference.");
+        console.log("(chrome local storage) DST offset is NOT active");
     }
-    check(finalDST);
+    check(dst);
 });
 
-function isDST(d) {
-    let jan = new Date(d.getFullYear(), 0, 1).getTimezoneOffset();
-    let jul = new Date(d.getFullYear(), 6, 1).getTimezoneOffset();
-    return Math.max(jan, jul) !== d.getTimezoneOffset();
-}
-
-function check(finalDST) {
+function check(dst) {
     const els = document.getElementsByClassName("game-state-container");
     setTimeout(() => {
         if (els.length > 0) {
             console.log(els.length);
             console.log("(check) Defined.");
-            modifyTime(els,finalDST);
+            modifyTime(els,dst);
         } else if (count < max) {
             console.log("(check) Undefined.");
             count += 1;

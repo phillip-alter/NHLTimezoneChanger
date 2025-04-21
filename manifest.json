@@ -18,11 +18,8 @@
         "scripts/content.js"
       ],
       "matches": [
-        "https://www.nhl.com/*"
+        "https://www.nhl.com/"
       ]
     }
-  ],
-  "permissions": [
-    "storage"
   ]
 }

@@ -1,7 +1,18 @@
-// console.log("Before attempt");
 check();
 var count = 0;
 var max = 6;
+
+var offset = new Date().getTimezoneOffset();
+console.log(offset);
+var dst = isDST(new Date());
+console.log(dst);
+
+function isDST(d) {
+    let jan = new Date(d.getFullYear(), 0, 1).getTimezoneOffset();
+    let jul = new Date(d.getFullYear(), 6, 1).getTimezoneOffset();
+    return Math.max(jan, jul) !== d.getTimezoneOffset();    
+}
+
 function check(){
     const els = document.getElementsByClassName("game-state-container");
     setTimeout(()=>{
@@ -19,42 +30,40 @@ function check(){
 
 function modifyTime(eles){
     if (eles.length > 0){
-        // console.log("(modifyTime if) before re");
         const hrs = /[0-9]{1,2}:/gi;
-        const mins = /30/gi;
+        const mins = /(00)|(30)/gi;
         const ampm = /(AM)|(PM)/gi;
-        const zone = /(EST)|(EDT)$/gi;
-        // console.log(`(modifyTime if) re: ${re}`);
+        const zone = /(EST)|(EDT)/gi;
         for (var i = 0; i < eles.length; i++){
-            // console.log("(modifyTime for) inside of for loop");
-            // console.log(`(modifyTime for) tagname: ${eles[i].tagName}`);
             var cEl = eles[i].children;
-            // console.log(`(modifyTime for) child tag name: ${cEl[0].tagName}`)
-            // console.log(`(modifyTime for) child text: ${cEl[0].textContent}`)
             var str = cEl[0].textContent;
-            // console.log(`(modifyTime for) str: ${str}`)
             var hr = str.match(hrs);
             var min = str.match(mins);
-            var ap = str.match(ampm);
+            var ampmCheck = str.match(ampm);
             var tz = str.match(zone);
-
-            if (hr !== null){
-                var pdtHour = parseInt(hr[0]) - 4;
-                // console.log(`(modifyTime for if) output: ${pdtHour}`);
-                cEl[0].textContent = cEl[0].textContent.replace(hrs,pdtHour+":"); 
-            }
-            if (min !== null){
-                var pdtMins = (parseInt(min[0]) - 0).toString().padStart(2,'0');
-                // console.log(`(modifyTime for if2) output: ${pdtMins}`);
-                cEl[0].textContent = cEl[0].textContent.replace(mins,pdtMins); 
-            }
-            if (ap !== null){
-                var pdtAmpm = "PM";
-                cEl[0].textContent = cEl[0].textContent.replace(ampm,pdtAmpm); 
-            }
-            if (tz !== null){
-                var pdtZone = "PDT";
-                cEl[0].textContent = cEl[0].textContent.replace(zone,pdtZone);
+            var ap;
+            if (hr !== null && min !== null && ampmCheck !== null && tz !== null){
+                var utcTime = (parseInt(hr[0]) + 12) * 60;
+                if (dst){
+                    utcTime += 240;
+                } else {
+                    utcTime += 300;
+                }
+                var localTime = (utcTime) - (offset);
+                var leftoverMins = localTime % 60;
+                localTime = parseInt(localTime / 60) % 24;
+                if (localTime >= 12){
+                    ap = "PM";
+                    if (localTime !== 12) localTime = (localTime - 12);
+                } else {
+                    ap = "AM";
+                    if (localTime == 0) localTime += 12;
+                }
+                cEl[0].textContent = cEl[0].textContent.replace(hrs,localTime+":");
+                var minute = (Math.abs(parseInt(min[0]) - leftoverMins)).toString().padStart(2,'0');
+                cEl[0].textContent = cEl[0].textContent.replace(mins,minute); 
+                cEl[0].textContent = cEl[0].textContent.replace(ampm,ap); 
+                cEl[0].textContent = cEl[0].textContent.replace(zone,"");
             }
         }
     }
